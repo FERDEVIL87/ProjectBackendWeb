@@ -4,7 +4,7 @@ require_once '../config/database.php';
 
 // Ambil semua data user, diurutkan berdasarkan tanggal dibuat
 try {
-    $stmt = $conn->prepare("SELECT id, username, nama_lengkap, email, role, created_at FROM users ORDER BY created_at DESC");
+    $stmt = $conn->prepare("SELECT id, username, email, role, created_at FROM users ORDER BY created_at DESC");
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -25,7 +25,7 @@ try {
         <div class="header-nav">
             <h2>Manajemen Backend Toko Komputer</h2>
             <div>
-                <span>Halo, <?php echo htmlspecialchars($_SESSION['nama_lengkap']); ?> (<?php echo htmlspecialchars($_SESSION['role']); ?>) | </span>
+                <span>Halo, <?php echo htmlspecialchars($_SESSION['username']); ?> (<?php echo htmlspecialchars($_SESSION['role']); ?>) | </span>
                 <a href="../index.php">Halaman Utama</a> |
                 <a href="../auth/logout.php">Logout</a>
             </div>
@@ -33,12 +33,12 @@ try {
 
         <nav class="menu-nav">
             <ul>
-                <li><a href="../pc_packages/index.php">Paket Rakitan PC</a></li>
+                <li><a href="../users/pc_rakitan.php">Paket Rakitan PC</a></li>
                 <li><a href="../users/laptop.php">Laptop</a></li>
-                <li><a href="../console_handheld/index.php">Console & Handheld PC</a></li>
-                <li><a href="../pc_parts/index.php">PC Parts</a></li>
-                <li><a href="../customer_service/index.php">Customer Service</a></li>
-                <li><a href="../checkout/index.php">Checkout</a></li>
+                <li><a href="../users/console_n_handheld.php">Console & Handheld PC</a></li>
+                <li><a href="../users/pc_part.php">PC Parts</a></li>
+                <li><a href="../users/cs.php">Customer Service</a></li>
+                <li><a href="../users/checkout.php">Checkout</a></li>
             </ul>
         </nav>
 
@@ -64,7 +64,6 @@ try {
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
-                        <th>Nama Lengkap</th>
                         <th>Email</th>
                         <th>Role</th>
                         <th>Tanggal Daftar</th>
@@ -76,7 +75,6 @@ try {
                         <tr>
                             <td><?php echo htmlspecialchars($user['id']); ?></td>
                             <td><?php echo htmlspecialchars($user['username']); ?></td>
-                            <td><?php echo htmlspecialchars($user['nama_lengkap']); ?></td>
                             <td><?php echo htmlspecialchars($user['email']); ?></td>
                             <td><?php echo htmlspecialchars(ucfirst($user['role'])); ?></td>
                             <td><?php echo htmlspecialchars(date('d M Y, H:i', strtotime($user['created_at']))); ?></td>

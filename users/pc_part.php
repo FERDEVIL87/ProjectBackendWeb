@@ -19,15 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Save to database (gambar ke LONGBLOB)
-    $stmt = $conn->prepare("INSERT INTO laptops (nama, harga, kategori, deskripsi, spesifikasi, gambar) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO pc_part (nama, harga, kategori, deskripsi, spesifikasi, gambar) VALUES (?, ?, ?, ?, ?, ?)");
     if ($stmt->execute([$nama, $harga, $kategori, $deskripsi, $spesifikasi, $gambar])) {
         $success = true;
     }
 }
 
-// Fetch laptop list
+// Fetch part list
 try {
-    $stmt = $conn->prepare("SELECT * FROM laptops ORDER BY id DESC");
+    $stmt = $conn->prepare("SELECT * FROM pc_part ORDER BY id DESC");
     $stmt->execute();
     $laptopList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -39,18 +39,18 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Input Data Laptop</title>
+    <title>Input Data PC Part</title>
     <link rel="stylesheet" href="../public/css/style.css">
 </head>
 <body>
     <section class="pc-list-section-bs">
         <div class="container py-4 py-md-5">
-            <h2 class="section-title-bs text-center">Input Data Laptop</h2>
+            <h2 class="section-title-bs text-center">Input Data PC Part</h2>
             <div class="row justify-content-center">
                 <div class="col-lg-7">
                     <form class="admin-card-bs p-4" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
-                            <label class="form-label">Nama Laptop</label>
+                            <label class="form-label">Nama PC Part</label>
                             <input name="nama" type="text" class="form-control" required>
                         </div>
                         <div class="mb-3">
@@ -61,9 +61,23 @@ try {
                             <label class="form-label">Kategori</label>
                             <select name="kategori" class="form-select" required>
                                 <option value="">Pilih Kategori</option>
-                                <option value="Low-End">Low-End</option>
-                                <option value="Mid-Range">Mid-Range</option>
-                                <option value="High-End">High-End</option>
+                                <option value="Processor Intel">Processor Intel</option>
+                                <option value="Processor AMD">Processor AMD</option>
+                                <option value="Mainboard">Mainboard</option>
+                                <option value="Memory">Memory</option>
+                                <option value="VGA">VGA</option>
+                                <option value="HDD">HDD</option>
+                                <option value="SSD">SSD</option>
+                                <option value="PSU">PSU</option>
+                                <option value="Case">Case</option>
+                                <option value="LED Monitor">LED Monitor</option>
+                                <option value="Mouse">Mouse</option>
+                                <option value="Keyboard">Keyboard</option>
+                                <option value="Webcam">Webcam</option>
+                                <option value="Cable">Cable</option>
+                                <option value="Speaker">Speaker</option>
+                                <option value="USB Flashdisk">USB Flashdisk</option>
+                                <option value="Printer">Printer</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -80,7 +94,7 @@ try {
                         </div>
                         <button class="login-btn-bs w-100" type="submit">Simpan Data</button>
                         <?php if ($success): ?>
-                            <p class="success-bs mt-3">Data laptop berhasil disimpan!</p>
+                            <p class="success-bs mt-3">Data PC Part berhasil disimpan!</p>
                         <?php endif; ?>
                     </form>
                 </div>
@@ -88,13 +102,13 @@ try {
             <div class="row justify-content-center mt-5">
                 <div class="col-12">
                     <div class="admin-card-bs p-3">
-                        <h4 class="mb-3" style="font-family:'Orbitron',sans-serif;color:var(--primary-color);">Daftar Laptop</h4>
+                        <h4 class="mb-3" style="font-family:'Orbitron',sans-serif;color:var(--primary-color);">Daftar PC Part</h4>
                         <div class="table-responsive">
                             <table class="table table-dark table-striped align-middle table-bordered">
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama Laptop</th>
+                                        <th>Nama Komponen PC</th>
                                         <th>Harga</th>
                                         <th>Kategori</th>
                                         <th>Deskripsi</th>
@@ -123,7 +137,7 @@ try {
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">Belum ada data laptop.</td>
+                                            <td colspan="7" class="text-center text-muted">Belum ada data PC Part.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>

@@ -1,14 +1,21 @@
 <?php
 // config/database.php
 
+global $conn;
+
 $host = "localhost"; // atau alamat IP server database kamu
-$db_name = "Prak9";
+$db_name = "login_jwr";
 $username_db = "root"; // username database kamu
 $password_db = ""; // password database kamu (kosongkan jika tidak ada)
 
 try {
-    $conn = new PDO("mysql:host={$host};dbname={$db_name}", $username_db, $password_db);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $dsn = "mysql:host={$host};dbname={$db_name};charset=utf8mb4";
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+    $conn = new PDO($dsn, $username_db, $password_db, $options);
     // echo "Koneksi sukses!"; // Hapus atau beri komentar setelah tes
 } catch(PDOException $exception) {
     echo "Koneksi error: " . $exception->getMessage();

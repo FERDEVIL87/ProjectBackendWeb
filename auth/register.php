@@ -3,13 +3,16 @@ session_start();
 require_once '../config/database.php'; // Hubungkan ke database
 
 $errors = [];
-$username = $nama_lengkap = $email = ""; // Inisialisasi variabel
+$username = $email = ""; // Inisialisasi variabel
+
+if ($conn === null) {
+    die("Koneksi ke database gagal. Silakan cek konfigurasi database Anda.");
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
     $konfirmasi_password = $_POST['konfirmasi_password'];
-    $nama_lengkap = trim($_POST['nama_lengkap']);
     $email = trim($_POST['email']);
     $role = $_POST['role'] ?? 'user'; // Default ke 'user' jika tidak ada
 
@@ -19,7 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($password)) { $errors[] = "Password wajib diisi."; }
     if (strlen($password) < 6) { $errors[] = "Password minimal 6 karakter."; }
     if ($password !== $konfirmasi_password) { $errors[] = "Konfirmasi password tidak cocok."; }
-    if (empty($nama_lengkap)) { $errors[] = "Nama lengkap wajib diisi."; }
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Email tidak valid atau wajib diisi.";
     }
@@ -46,10 +48,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_password = password_hash($password, PASSWORD_BCRYPT); // Hash password
 
         try {
-            $stmt = $conn->prepare("INSERT INTO users (username, password, nama_lengkap, email, role) VALUES (:username, :password, :nama_lengkap, :email, :role)");
+            $stmt = $conn->prepare("INSERT INTO users (username, password, email, role) VALUES (:username, :password, :email, :role)");
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':password', $hashed_password);
-            $stmt->bindParam(':nama_lengkap', $nama_lengkap);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':role', $role);
 
@@ -100,18 +101,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" id="konfirmasi_password" name="konfirmasi_password" required>
             </div>
             <div>
-                <label for="nama_lengkap">Nama Lengkap:</label>
-                <input type="text" id="nama_lengkap" name="nama_lengkap" value="<?php echo htmlspecialchars($nama_lengkap); ?>" required>
-            </div>
-            <div>
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required>
             </div>
             <div>
                 <label for="role">Role:</label>
                 <select id="role" name="role">
-                    <option value="user" selected>User</option>
-                    <option value="admin">Admin</option>
+                    <option value="user" <?php echo (isset($role) && $role == 'user') ? 'selected' : ''; ?>>User</option>
+                    <option value="admin" <?php echo (isset($role) && $role == 'admin') ? 'selected' : ''; ?>>Admin</option>
                 </select>
             </div>
             <div>
@@ -122,4 +119,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
-

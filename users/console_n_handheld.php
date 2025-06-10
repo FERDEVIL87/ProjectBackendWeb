@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Save to database (gambar ke LONGBLOB)
-    $stmt = $conn->prepare("INSERT INTO laptops (nama, harga, kategori, deskripsi, spesifikasi, gambar) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO Console_and_Handlheld (nama, harga, kategori, deskripsi, spesifikasi, gambar) VALUES (?, ?, ?, ?, ?, ?)");
     if ($stmt->execute([$nama, $harga, $kategori, $deskripsi, $spesifikasi, $gambar])) {
         $success = true;
     }
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch laptop list
 try {
-    $stmt = $conn->prepare("SELECT * FROM laptops ORDER BY id DESC");
+    $stmt = $conn->prepare("SELECT * FROM Console_and_Handlheld ORDER BY id DESC");
     $stmt->execute();
     $laptopList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -39,18 +39,18 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Input Data Laptop</title>
+    <title>Input Data Console and Handlheld</title>
     <link rel="stylesheet" href="../public/css/style.css">
 </head>
 <body>
     <section class="pc-list-section-bs">
         <div class="container py-4 py-md-5">
-            <h2 class="section-title-bs text-center">Input Data Laptop</h2>
+            <h2 class="section-title-bs text-center">Input Data Console and Handlheld</h2>
             <div class="row justify-content-center">
                 <div class="col-lg-7">
                     <form class="admin-card-bs p-4" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
-                            <label class="form-label">Nama Laptop</label>
+                            <label class="form-label">Nama Console and Handlheld</label>
                             <input name="nama" type="text" class="form-control" required>
                         </div>
                         <div class="mb-3">
@@ -61,9 +61,11 @@ try {
                             <label class="form-label">Kategori</label>
                             <select name="kategori" class="form-select" required>
                                 <option value="">Pilih Kategori</option>
-                                <option value="Low-End">Low-End</option>
-                                <option value="Mid-Range">Mid-Range</option>
-                                <option value="High-End">High-End</option>
+                                <option value="PlayStation Powerhouse">PlayStation Powerhouse</option>
+                                <option value="Xbox Univers">Xbox Univers</option>
+                                <option value="Nitendo Magic">Nitendo Magic</option>
+                                <option value="Handheld PC Heroes">Handheld PC Heroes</option>
+                                <option value="Explore More Console">Explore More Console</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -72,7 +74,7 @@ try {
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Spesifikasi (opsional)</label>
-                            <textarea name="spesifikasi" class="form-control" rows="3" placeholder="Contoh: CPU: Intel Core i5, RAM: 8GB, SSD: 512GB, ..."></textarea>
+                            <textarea name="spesifikasi" class="form-control" rows="3" placeholder="Contoh: PlayStation 5 "></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Gambar Produk</label>
@@ -80,7 +82,7 @@ try {
                         </div>
                         <button class="login-btn-bs w-100" type="submit">Simpan Data</button>
                         <?php if ($success): ?>
-                            <p class="success-bs mt-3">Data laptop berhasil disimpan!</p>
+                            <p class="success-bs mt-3">Data Console and Handhled berhasil disimpan!</p>
                         <?php endif; ?>
                     </form>
                 </div>
@@ -88,13 +90,13 @@ try {
             <div class="row justify-content-center mt-5">
                 <div class="col-12">
                     <div class="admin-card-bs p-3">
-                        <h4 class="mb-3" style="font-family:'Orbitron',sans-serif;color:var(--primary-color);">Daftar Laptop</h4>
+                        <h4 class="mb-3" style="font-family:'Orbitron',sans-serif;color:var(--primary-color);">Daftar Console and Handhled</h4>
                         <div class="table-responsive">
                             <table class="table table-dark table-striped align-middle table-bordered">
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama Laptop</th>
+                                        <th>Nama Produk</th>
                                         <th>Harga</th>
                                         <th>Kategori</th>
                                         <th>Deskripsi</th>
@@ -123,7 +125,7 @@ try {
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">Belum ada data laptop.</td>
+                                            <td colspan="7" class="text-center text-muted">Belum ada data Console and Handhled.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>

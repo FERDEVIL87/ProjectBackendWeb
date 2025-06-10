@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($errors)) {
         try {
-            $stmt = $conn->prepare("SELECT id, username, password, nama_lengkap, role FROM users WHERE username = :username LIMIT 1");
+            $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = :username LIMIT 1");
             $stmt->bindParam(':username', $username);
             $stmt->execute();
 
@@ -50,7 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Password cocok, simpan informasi user ke session
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
-                    $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
                     $_SESSION['role'] = $user['role']; // Simpan role
 
                     // Hapus captcha dari session setelah login berhasil
@@ -103,12 +102,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="login.php" method="post">
             <div>
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($username); ?>"
-                    required>
+                <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($username); ?>" required>
             </div>
             <div>
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+            </div>
+            <div>
+                <label for="captcha">Captcha:</label>
+                <div style="margin-bottom:5px;font-weight:bold;font-size:18px;">
+                    <?php echo $_SESSION['captcha']; ?>
+                </div>
+                <input type="text" id="captcha" name="captcha" maxlength="4" required>
             </div>
             <div>
                 <button type="submit">Login</button>
