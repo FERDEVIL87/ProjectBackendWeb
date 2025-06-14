@@ -4,7 +4,7 @@
 global $conn;
 
 $host = "localhost"; // atau alamat IP server database kamu
-$db_name = "login_jwr";
+$db_name = "Prak9";
 $username_db = "root"; // username database kamu
 $password_db = ""; // password database kamu (kosongkan jika tidak ada)
 

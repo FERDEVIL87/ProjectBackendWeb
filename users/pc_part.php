@@ -2,34 +2,30 @@
 require_once '../config/database.php';
 
 $success = false;
-$laptopList = [];
+$pcPartList = [];
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama = $_POST['nama'] ?? '';
-    $harga = $_POST['harga'] ?? 0;
-    $kategori = $_POST['kategori'] ?? '';
-    $deskripsi = $_POST['deskripsi'] ?? '';
-    $spesifikasi = $_POST['spesifikasi'] ?? '';
-    $gambar = null;
+    $name = $_POST['name'] ?? '';
+    $price = $_POST['price'] ?? 0;
+    $brand = $_POST['brand'] ?? '';
+    $category = $_POST['category'] ?? '';
+    $image = $_POST['image'] ?? '';
+    $specs = $_POST['specs'] ?? [];
+    $stock = $_POST['stock'] ?? 0;
 
-    // Proses upload gambar ke LONGBLOB
-    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
-        $gambar = file_get_contents($_FILES['gambar']['tmp_name']);
-    }
-
-    // Save to database (gambar ke LONGBLOB)
-    $stmt = $conn->prepare("INSERT INTO pc_part (nama, harga, kategori, deskripsi, spesifikasi, gambar) VALUES (?, ?, ?, ?, ?, ?)");
-    if ($stmt->execute([$nama, $harga, $kategori, $deskripsi, $spesifikasi, $gambar])) {
+    // Save to database
+    $stmt = $conn->prepare("INSERT INTO pc_parts (name, price, brand, category, image, specs, stock) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    if ($stmt->execute([$name, $price, $brand, $category, $image, json_encode($specs), $stock])) {
         $success = true;
     }
 }
 
 // Fetch part list
 try {
-    $stmt = $conn->prepare("SELECT * FROM pc_part ORDER BY id DESC");
+    $stmt = $conn->prepare("SELECT * FROM pc_parts ORDER BY id DESC");
     $stmt->execute();
-    $laptopList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $pcPartList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     // Handle error
 }
@@ -48,49 +44,34 @@ try {
             <h2 class="section-title-bs text-center">Input Data PC Part</h2>
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <form class="admin-card-bs p-4" method="POST" enctype="multipart/form-data">
+                    <form class="admin-card-bs p-4" method="POST">
                         <div class="mb-3">
                             <label class="form-label">Nama PC Part</label>
-                            <input name="nama" type="text" class="form-control" required>
+                            <input name="name" type="text" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Harga</label>
-                            <input name="harga" type="number" class="form-control" required min="0">
+                            <input name="price" type="number" class="form-control" required min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Brand</label>
+                            <input name="brand" type="text" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Kategori</label>
-                            <select name="kategori" class="form-select" required>
-                                <option value="">Pilih Kategori</option>
-                                <option value="Processor Intel">Processor Intel</option>
-                                <option value="Processor AMD">Processor AMD</option>
-                                <option value="Mainboard">Mainboard</option>
-                                <option value="Memory">Memory</option>
-                                <option value="VGA">VGA</option>
-                                <option value="HDD">HDD</option>
-                                <option value="SSD">SSD</option>
-                                <option value="PSU">PSU</option>
-                                <option value="Case">Case</option>
-                                <option value="LED Monitor">LED Monitor</option>
-                                <option value="Mouse">Mouse</option>
-                                <option value="Keyboard">Keyboard</option>
-                                <option value="Webcam">Webcam</option>
-                                <option value="Cable">Cable</option>
-                                <option value="Speaker">Speaker</option>
-                                <option value="USB Flashdisk">USB Flashdisk</option>
-                                <option value="Printer">Printer</option>
-                            </select>
+                            <input name="category" type="text" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Deskripsi</label>
-                            <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
+                            <label class="form-label">Gambar (URL)</label>
+                            <input name="image" type="text" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Spesifikasi (opsional)</label>
-                            <textarea name="spesifikasi" class="form-control" rows="3" placeholder="Contoh: CPU: Intel Core i5, RAM: 8GB, SSD: 512GB, ..."></textarea>
+                            <label class="form-label">Spesifikasi</label>
+                            <textarea name="specs" class="form-control" rows="3" placeholder='Contoh: ["24 Cores", "32 Threads", "5.80 GHz Base Clock"]' required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Gambar Produk</label>
-                            <input type="file" name="gambar" class="form-control" accept="image/*" required>
+                            <label class="form-label">Stok</label>
+                            <input name="stock" type="number" class="form-control" required min="0">
                         </div>
                         <button class="login-btn-bs w-100" type="submit">Simpan Data</button>
                         <?php if ($success): ?>
@@ -108,36 +89,40 @@ try {
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama Komponen PC</th>
+                                        <th>Nama</th>
                                         <th>Harga</th>
+                                        <th>Brand</th>
                                         <th>Kategori</th>
-                                        <th>Deskripsi</th>
-                                        <th>Spesifikasi</th>
                                         <th>Gambar</th>
+                                        <th>Spesifikasi</th>
+                                        <th>Stok</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php if (count($laptopList) > 0): ?>
-                                        <?php foreach ($laptopList as $idx => $item): ?>
+                                    <?php if (count($pcPartList) > 0): ?>
+                                        <?php foreach ($pcPartList as $idx => $item): ?>
                                             <tr>
                                                 <td><?php echo $idx + 1; ?></td>
-                                                <td><?php echo htmlspecialchars($item['nama']); ?></td>
-                                                <td>Rp <?php echo number_format($item['harga'], 0, ',', '.'); ?></td>
-                                                <td><?php echo htmlspecialchars($item['kategori']); ?></td>
-                                                <td><?php echo htmlspecialchars($item['deskripsi']); ?></td>
-                                                <td><?php echo htmlspecialchars($item['spesifikasi']); ?></td>
+                                                <td><?php echo htmlspecialchars($item['name']); ?></td>
+                                                <td>Rp <?php echo number_format($item['price'], 0, ',', '.'); ?></td>
+                                                <td><?php echo htmlspecialchars($item['brand']); ?></td>
+                                                <td><?php echo htmlspecialchars($item['category']); ?></td>
                                                 <td>
-                                                    <?php if (!empty($item['gambar'])): ?>
-                                                        <img src="data:image/jpeg;base64,<?php echo base64_encode($item['gambar']); ?>" alt="Gambar" style="max-width:80px;max-height:80px;">
-                                                    <?php else: ?>
-                                                        <span class="text-muted">Tidak ada gambar</span>
-                                                    <?php endif; ?>
+                                                    <img src="<?php echo htmlspecialchars($item['image']); ?>" alt="Gambar" style="max-width:80px;max-height:80px;">
                                                 </td>
+                                                <td>
+                                                    <ul>
+                                                        <?php foreach (json_decode($item['specs'], true) as $spec): ?>
+                                                            <li><?php echo htmlspecialchars($spec); ?></li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($item['stock']); ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">Belum ada data PC Part.</td>
+                                            <td colspan="8" class="text-center text-muted">Belum ada data PC Part.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
